@@ -1,0 +1,13 @@
+{
+     "userid": 1000,
+     "username": "banana",
+     "verified": true,
+     "weight": 123.45,
+     "items": [ 1, 2, 3, 4 ],
+     "games":["tiny farm", "heroes war", "derby days"],
+     "subobj": 
+     {
+      "prop": 9191
+     },
+	 "arrray": [{"prop":"val1"}, {"prop":"val2"}]
+}
