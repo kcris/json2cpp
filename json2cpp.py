@@ -1,6 +1,7 @@
 #!/user/bin/env python
 
 import json
+import os
 import sys
 from types import *
 #from collections import OrderedDict
@@ -86,8 +87,8 @@ def membersList(varinfo, obj = None):
     return ", ".join(members)
     
 # generate output .h
-def generate_header(classname, includes, varinfo):
-    f = open(classname + '.h', 'wt')
+def generate_header(classname, includes, varinfo, dirname):
+    f = open(dirname + '/' + classname + '.h', 'wt')
     f.write('//\n// {}.h\n'.format(classname))
     f.write('//\n// -- generated file, do NOT edit\n//\n')
     f.write('#pragma once\n\n')
@@ -124,8 +125,8 @@ def generate_header(classname, includes, varinfo):
     f.write('};\n')
 
 # generate output .cpp
-def generate_source(classname, varinfo):
-    f = open(classname + '.cpp', 'wt')
+def generate_source(classname, varinfo, dirname):
+    f = open(dirname + '/' + classname + '.cpp', 'wt')
     f.write('//\n// {}.cpp\n'.format(classname))
     f.write('//\n// -- generated class for jsoncpp\n//\n')
     f.write('#include \"{}.h\"\n\n'.format(classname))
@@ -149,12 +150,12 @@ def generate_source(classname, varinfo):
         if len(info) >= 3:
             if (info[0] == "class"): #json object
                 f.write('\t\tm_{}.load(jsonObject.at(L"{}")); //json object\n'.format(info[1], info[1]))                
-                generate(info[1].title(), info[2]) #recursively generate related classes
+                generate(info[1].title(), info[2], dirname) #recursively generate related classes
             elif 'vector' in info[0]: #json array
                 for line in array2vector_statements(info[1], info[2]):
                     f.write('\t\t'+line+'\n')
                 if info[1] == "class": 
-                    generate("{}Item".format(info[2].title()), info[3][0]) #recursively generate related classes
+                    generate("{}Item".format(info[2].title()), info[3][0], dirname) #recursively generate related classes
         elif len(info) == 2: #simple type
           if not info[0] is None:
             f.write('\t\t'+assign_statement_load(info[0], info[1])+'\n')
@@ -179,11 +180,15 @@ def generate_source(classname, varinfo):
     f.write('}\n')
 
 # generate output files
-def generate(classname, data):
+def generate(classname, data, dirname):
     includes, varinfo = generate_variable_info(data)
     varinfo.sort()
-    generate_header(classname, includes, varinfo)
-    generate_source(classname, varinfo)
+    try:
+        os.stat(dirname)
+    except:
+        os.mkdir(dirname)
+    generate_header(classname, includes, varinfo, dirname)
+    generate_source(classname, varinfo, dirname)
     print("Generated class: {}".format(classname))
 
 #entry point
@@ -200,7 +205,7 @@ if __name__ == '__main__':
         print ("Can't open/read file".format(filename))
         sys.exit(2)
     data = json.loads(content) #data = json.loads(content, object_pairs_hook=OrderedDict)
-    generate(classname.title(), data)
+    generate(classname.title(), data, "out." + classname)
     sys.exit(0)
 
 #
