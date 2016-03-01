@@ -6,6 +6,18 @@ import sys
 from types import *
 #from collections import OrderedDict
 
+def cpp_identifier(name):
+    identifier = name
+    if (identifier[0].isdigit()):
+      identifier = "_" + identifier
+    return identifier.replace(".", "_")
+
+def cpp_typename(name):
+    return cpp_identifier(name)
+
+def cpp_filename(name):
+    return cpp_identifier(name)
+
 def cpp_type(value):
     if isinstance(value, bool):
         return 'bool'
@@ -31,13 +43,13 @@ def generate_variable_info(data):
             #if not 'vector' in includes:
             #    includes.append('#include <vector>')
             if isinstance(v[0], dict):
-                includes.append('#include "{}Item.h" //generated'.format(k.title()))
+                includes.append('#include "{}Item.h" //generated'.format(cpp_filename(k.title())))
                 varinfo.append((cpp_type(v), cpp_type(v[0]), k, v))
             else:
                 varinfo.append((cpp_type(v), cpp_type(v[0]), k))
         elif isinstance(v, dict): #json object
             if not k in includes:
-                includes.append('#include "{}.h" //generated'.format(k))
+                includes.append('#include "{}.h" //generated'.format(cpp_filename(k)))
             varinfo.append(('class',k, data[k]))
         else: #simple type
             typename = cpp_type(v)
@@ -52,25 +64,25 @@ type_methods_load = {'int':'as_integer',               'bool':'as_bool',        
 type_methods_save = {'int':'web::json::value::number', 'bool':'web::json::value::boolean', 'double':'web::json::value::number', 'std::wstring':'web::json::value::string'}
 
 def assign_statement_load(t, v):
-    return 'm_{} = jsonObject.at(L"{}").{}();'.format(v, v, type_methods_load[t])
+    return 'm_{} = jsonObject.at(L"{}").{}();'.format(cpp_identifier(v), v, type_methods_load[t])
 
 def assign_statement_save(t, v):
-    return 'jsonObject[L"{}"] = {}(m_{});'.format(v, type_methods_save[t], v)
+    return 'jsonObject[L"{}"] = {}(m_{});'.format(v, type_methods_save[t], cpp_identifier(v))
 
 def array2vector_statements(elemt, var):
     stats = []
     stats.append('\n\t\tfor (const {} & item : jsonObject.at(L"{}").as_array())'.format(type_json_cpp, var))
     if elemt == 'class':
-        stats.append('\tm_{}.push_back({}(item)); //json objects'.format(var, "{}Item".format(var.title()))) #array of objects
+        stats.append('\tm_{}.push_back({}(item)); //json objects'.format(cpp_identifier(var), "{}Item".format(cpp_identifier(var.title())))) #array of objects
     else:
-        stats.append('\tm_{}.push_back(item.{}());'.format(var, type_methods_load[elemt])) #simple array
+        stats.append('\tm_{}.push_back(item.{}());'.format(cpp_identifier(var), type_methods_load[elemt])) #simple array
     return stats
 
 def vector2array_statements(elemt, var):
     stats = []
-    temp = 't_'+ var
+    temp = 't_'+ cpp_identifier(var)
     stats.append('\n\tstd::vector<{}> {};'.format(type_json_cpp, temp))
-    stats.append('for (const auto & item : m_{})'.format(var))
+    stats.append('for (const auto & item : m_{})'.format(cpp_identifier(var)))
     if elemt == 'class': #array of objects
         stats.append('\t{}.push_back(item.save()); //json objects'.format(temp))
     else: #simple array
@@ -82,7 +94,7 @@ def membersList(varinfo, obj = None):
     members = []
     for info in varinfo:
         memberName = 'm_' if obj is None else '{}.m_'.format(obj)
-        memberName += info[2] if len(info) >= 3 and info[0] != "class" else info[1]
+        memberName += cpp_identifier(info[2] if len(info) >= 3 and info[0] != "class" else info[1])
         members.append(memberName)
     return ", ".join(members)
     
@@ -116,12 +128,12 @@ def generate_header(classname, includes, varinfo, dirname):
     for info in varinfo:
         if len(info) >= 3:
             if info[0] == "class": #json object
-                f.write('\t{} m_{};\n'.format(info[1].title(), info[1]))
+                f.write('\t{} m_{};\n'.format(cpp_typename(info[1].title()), cpp_identifier(info[1])))
             else: #json array
                 itemType = "{}Item".format(info[2].title()) if info[1] == "class" else info[1]
-                f.write('\t{}<{}> m_{};\n'.format(info[0], itemType, info[2]))
+                f.write('\t{}<{}> m_{};\n'.format(info[0], cpp_typename(itemType), cpp_identifier(info[2])))
         elif len(info) == 2: #simple type
-            f.write('\t{} m_{};\n'.format(info[0], info[1]))
+            f.write('\t{} m_{};\n'.format(cpp_typename(info[0]), cpp_identifier(info[1])))
     f.write('};\n')
 
 # generate output .cpp
@@ -149,7 +161,7 @@ def generate_source(classname, varinfo, dirname):
     for info in varinfo:
         if len(info) >= 3:
             if (info[0] == "class"): #json object
-                f.write('\t\tm_{}.load(jsonObject.at(L"{}")); //json object\n'.format(info[1], info[1]))                
+                f.write('\t\tm_{}.load(jsonObject.at(L"{}")); //json object\n'.format(cpp_identifier(info[1]), info[1]))                
                 generate(info[1].title(), info[2], dirname) #recursively generate related classes
             elif 'vector' in info[0]: #json array
                 for line in array2vector_statements(info[1], info[2]):
@@ -169,7 +181,7 @@ def generate_source(classname, varinfo, dirname):
     for info in varinfo:
         if len(info) >= 3:
             if (info[0] == "class"): #json object
-                f.write('\tjsonObject[L"{}"] = m_{}.save(); //json object\n'.format(info[1], info[1]))
+                f.write('\tjsonObject[L"{}"] = m_{}.save(); //json object\n'.format(info[1], cpp_identifier(info[1])))
             elif 'vector' in info[0]: #json array
                 for line in vector2array_statements(info[1], info[2]):
                     f.write('\t'+line+'\n')
@@ -187,9 +199,10 @@ def generate(classname, data, dirname):
         os.stat(dirname)
     except:
         os.mkdir(dirname)
-    generate_header(classname, includes, varinfo, dirname)
-    generate_source(classname, varinfo, dirname)
-    print("Generated class: {}".format(classname))
+    classId = cpp_identifier(classname)
+    generate_header(classId, includes, varinfo, dirname)
+    generate_source(classId, varinfo, dirname)
+    print("Generated class: {}".format(classId))
 
 #entry point
 if __name__ == '__main__':
@@ -197,7 +210,7 @@ if __name__ == '__main__':
         print ('Usage: {} <json file>'.format(sys.argv[0]))
         sys.exit(1)
     filename = sys.argv[1]
-    classname = filename.split('.')[0]
+    classname = cpp_identifier(filename.split('.')[0])
     try:
         with open(filename) as f:
             content = f.read()
