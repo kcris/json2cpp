@@ -19,3 +19,7 @@ If a well known, fixed json format is used, direct mapping to c++ classes/member
 
 
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/kcris/json2cpp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
