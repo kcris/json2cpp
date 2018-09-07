@@ -11,4 +11,4 @@ If a well known, fixed json format is used (taken from a json sample), direct ma
 * each json object in our sample becomes a c++ class, each json property of such an object becomes a c++ class member
 * generated code still relies on a third party json parser library, currently [cpprest](https://github.com/Microsoft/cpprestsdk)
 * json arrays must be homogeneous (all elements must have same 'type')
-* the original script is available [here](https://gist.github.com/soharu/5083914). (no subobjects supported)
+* the original script is available [here](https://gist.github.com/soharu/5083914) (no subobjects supported)
