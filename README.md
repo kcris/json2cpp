@@ -1,4 +1,4 @@
-# json2cpp
+# json2class
 
 ## python script that generates c++ mapping classes for a given json
 
