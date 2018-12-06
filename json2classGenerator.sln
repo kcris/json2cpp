@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "json2class", "src\json2class.pyproj", "{6E2E5CEA-B2A9-4D0A-A274-E3610F7304AA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "json2cppTest", "test\json2cppTest\json2cppTest.vcxproj", "{B01F6817-2C93-4107-9803-A5BDECAC6425}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E2E5CEA-B2A9-4D0A-A274-E3610F7304AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2E5CEA-B2A9-4D0A-A274-E3610F7304AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6E2E5CEA-B2A9-4D0A-A274-E3610F7304AA}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{6E2E5CEA-B2A9-4D0A-A274-E3610F7304AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E2E5CEA-B2A9-4D0A-A274-E3610F7304AA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6E2E5CEA-B2A9-4D0A-A274-E3610F7304AA}.Release|Win32.ActiveCfg = Release|Any CPU
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Debug|Win32.Build.0 = Debug|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Release|Any CPU.ActiveCfg = Release|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Release|Win32.ActiveCfg = Release|Win32
+		{B01F6817-2C93-4107-9803-A5BDECAC6425}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DDBAFDFF-BF5E-43A9-81B0-F080388C2B68}
+	EndGlobalSection
+EndGlobal

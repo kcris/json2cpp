@@ -7,7 +7,8 @@
      "games":["tiny farm", "heroes war", "derby days"],
      "subobj": 
      {
-      "prop": 9191
+      "prop": 9191,
+	  "inner" : {"alfa":1, "beta":3.14}
      },
 	 "arrray": [{"prop":"val1"}, {"prop":"val2"}]
 }
